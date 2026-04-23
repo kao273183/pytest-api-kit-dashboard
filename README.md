@@ -5,6 +5,8 @@
 > GitHub Actions workflow dispatch + tail the live log — no GitHub access
 > required.
 
+**[繁體中文](#中文版)** | **English**
+
 **Companion to [`pytest-api-kit`](https://github.com/kao273183/pytest-api-kit) and [`pytest-api-kit-aws`](https://github.com/kao273183/pytest-api-kit-aws).**
 Install order recommended: kit → aws → dashboard.
 
@@ -166,3 +168,84 @@ will **drop** `platform` (not in the `api-tests` list) before calling GitHub.
 
 MIT. Extracted from a production QA dashboard that's been onboarding
 non-engineer testers for 2+ months without a single support ticket.
+
+---
+
+## 中文版
+
+### 這是什麼
+
+**`pytest-api-kit-dashboard`** 是給 [`pytest-api-kit`](https://github.com/kao273183/pytest-api-kit) 配的「自助觸發面板」。讓 **非工程同事**（PM、QA、主管）用公司 SSO 登入網頁，按一個按鈕就能觸發測試、看即時 log、看報告 — 完全不用 GitHub 帳號。
+
+### 六個核心功能
+
+- **Cognito User Pool** 內建三種角色：`admin` / `tester` / `viewer`
+- **API Gateway HTTP API** 配 JWT authorizer — 零自訂 auth 程式碼
+- **Lambda** 橋接網頁點擊 → GitHub Actions `workflow_dispatch`
+- **單檔 HTML 網頁** — 登入、觸發、即時 log、使用者管理一頁搞定
+- **Slack 通知** — 管理員新增使用者時自動把帳密發到 Slack
+- **安全設計** — GitHub token 只在 Lambda 端 Secrets Manager，瀏覽器端拿不到；Lambda 綁定 VPC NAT egress IP，可加入公司 GitHub IP 白名單
+
+### 架構
+
+```
+瀏覽器 (CloudFront trigger-panel.html)
+  └─ Cognito Hosted UI (SSO)
+       └─ id_token (JWT)
+            └─ API Gateway (JWT authorizer)
+                 └─ Lambda (trigger_test.py)
+                      ├─ Secrets Manager (GitHub PAT)
+                      ├─ GitHub API (workflow_dispatch)
+                      └─ Cognito admin API (使用者管理)
+                           └─ Slack webhook (新使用者通知)
+```
+
+### 快速開始（約 45 分鐘）
+
+完整教學：[docs/quickstart.md](docs/quickstart.md)
+
+```bash
+# 1. 建 GitHub fine-grained PAT 存到 Secrets Manager
+aws secretsmanager create-secret \
+  --name api-test-dashboard/github-pat \
+  --secret-string '{"token":"ghp_xxx"}'
+
+# 2. 部署 stack（約 3 分鐘）
+export GITHUB_OWNER=acme-org
+export ALLOWED_REPOS=api-tests,ui-tests
+export WORKFLOW_MAP_JSON='{"api-tests":"smoke.yml","ui-tests":"e2e.yml"}'
+export GITHUB_PAT_SECRET_ARN=arn:aws:secretsmanager:...
+export COGNITO_DOMAIN_PREFIX=acme-api-dashboard
+# ...等（完整清單見 docs/quickstart.md）
+
+./infra/deploy.sh
+
+# 3. 把 stack output 的三個值貼進 frontend/trigger-panel.html 的 CONFIG，上傳 S3
+aws s3 cp frontend/trigger-panel.html s3://your-bucket/trigger-panel.html
+
+# 4. 建第一個管理員
+POOL_ID=<從 stack output 取得> ./infra/add-user.sh you@acme.com '' admin
+```
+
+### 角色權限
+
+| 角色 | 可觸發測試 | 可看報告 | 可管理使用者 |
+|---|---|---|---|
+| `admin` | ✅ | ✅ | ✅ |
+| `tester` | ✅ | ✅ | ❌ |
+| `viewer` | ❌ | ✅ | ❌ |
+
+### 適用場景
+
+- **QA 團隊有非工程的測試員** — 他們不需要學 Git / GitHub / 命令列
+- **主管想自己跑 release smoke 看結果** — 比寫信叫 QA 跑快多了
+- **公司 SSO (Azure AD / Google Workspace / Okta)** 要整合 — Cognito 只要在 console 加 IdP 就能接上，不用改 CloudFormation
+
+### 這裡沒有的東西
+
+- **實際測試程式碼** — 見 [`pytest-api-kit`](https://github.com/kao273183/pytest-api-kit)
+- **ECS 部署基礎設施** — 見 [`pytest-api-kit-aws`](https://github.com/kao273183/pytest-api-kit-aws)
+
+### 授權
+
+MIT。歡迎 fork 使用。

@@ -1,2 +1,0 @@
-# boto3 and urllib come with the Lambda Python 3.11 runtime — no deps needed.
-# Add packages here only if you extend trigger_test.py beyond them.

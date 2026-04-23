@@ -1,9 +1,0 @@
-.DS_Store
-.env
-.envrc
-.env.local
-.idea/
-.vscode/
-
-# Lambda build artefacts
-*.zip

@@ -175,29 +175,30 @@
     //
     // Customise above: PROJECT_NAME in <title> and <h1>, docs/support links.
 
-    // When viewed on github.io (this repo's own preview), `pytest-reports/`
-    // doesn't exist because reports are uploaded to YOUR S3 bucket by
-    // pytest-api-kit-aws in production. Mark the card as demo-only so
-    // visitors don't hit a 404.
+    // When viewed on github.io (this repo's own preview), both
+    // `trigger-panel.html` and `pytest-reports/` are served as STATIC DEMOS
+    // on the gh-pages branch. Show a banner so visitors know they're on a
+    // preview, not a live deployment.
     (function handleGitHubPagesDemo() {
       if (!location.hostname.endsWith("github.io")) return;
-      var card = document.getElementById("reports-card");
-      if (!card) return;
-      card.removeAttribute("href");
-      card.setAttribute("data-disabled", "true");
-      card.style.cursor = "default";
+
+      // Tag the reports card visually so it's obvious it's a demo
       var arrow = document.getElementById("reports-arrow");
-      if (arrow) arrow.textContent = "Available once deployed";
+      if (arrow) arrow.innerHTML = 'View demo dashboard &rarr; <span ' +
+        'style="background:#2563eb;color:#fff;border-radius:999px;' +
+        'padding:.1em .5em;font-size:.75em;margin-left:.4em;">demo</span>';
+
       var banner = document.createElement("div");
       banner.style.cssText =
         "background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);" +
         "border-radius:8px;padding:.8rem 1rem;margin-bottom:2rem;" +
         "font-size:.85rem;line-height:1.5;";
       banner.innerHTML =
-        "👋 <b>You're on the GitHub Pages preview</b>. This is a template — " +
-        "the cards will work against real endpoints once you deploy to your " +
-        "own AWS stack. See the " +
-        "<a href='https://github.com/kao273183/pytest-api-kit-dashboard#quickstart'>quickstart</a>.";
+        "👋 <b>You're on the GitHub Pages preview</b>. Both cards show <b>demo " +
+        "mode</b> content — trigger panel UI without real auth, report " +
+        "dashboard with mock data. See the " +
+        "<a href='https://github.com/kao273183/pytest-api-kit-dashboard#quickstart'>quickstart</a> " +
+        "to deploy to your own AWS stack.";
       var wrap = document.querySelector(".wrap");
       if (wrap) wrap.insertBefore(banner, wrap.querySelector("nav"));
     })();

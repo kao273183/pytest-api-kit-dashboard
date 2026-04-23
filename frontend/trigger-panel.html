@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>API Test Test Trigger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Aligned with existing index.html palette (Zinc + blue accent) */
+    :root, [data-theme="dark"] {
+      --bg:            #0A0A0A;
+      --bg-card:       #111113;
+      --bg-hover:      #1C1C1E;
+      --panel:         rgba(255,255,255,0.04);
+      --panel-2:       rgba(255,255,255,0.06);
+      --border:        rgba(255,255,255,0.06);
+      --border-2:      rgba(255,255,255,0.10);
+      --text:          #FAFAFA;
+      --text-dim:      #A1A1AA;
+      --text-mute:     #71717A;
+      --text-deep:     #52525B;
+      --accent:        #3B82F6;
+      --accent-2:      #60A5FA;
+      --accent-glow:   rgba(59,130,246,0.35);
+      --ok:            #22C55E;
+      --ok-bg:         rgba(34,197,94,0.12);
+      --warn:          #EAB308;
+      --warn-bg:       rgba(234,179,8,0.12);
+      --err:           #EF4444;
+      --err-bg:        rgba(239,68,68,0.12);
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    [data-theme="light"] {
+      --bg:            #FAFAFA;
+      --bg-card:       #FFFFFF;
+      --bg-hover:      #F4F4F5;
+      --panel:         rgba(0,0,0,0.03);
+      --panel-2:       rgba(0,0,0,0.05);
+      --border:        rgba(0,0,0,0.08);
+      --border-2:      rgba(0,0,0,0.15);
+      --text:          #18181B;
+      --text-dim:      #52525B;
+      --text-mute:     #71717A;
+      --text-deep:     #A1A1AA;
+      --accent:        #3B82F6;
+      --accent-2:      #2563EB;
+      --accent-glow:   rgba(59,130,246,0.18);
+      --ok:            #16A34A;
+      --ok-bg:         rgba(34,197,94,0.10);
+      --warn:          #CA8A04;
+      --warn-bg:       rgba(234,179,8,0.10);
+      --err:           #DC2626;
+      --err-bg:        rgba(239,68,68,0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.005em;
+    }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    header.top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--text);
+      color: var(--bg);
+      display: grid; place-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+    .brand h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+    .brand .sub { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+
+    .user-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 10px 6px 6px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      display: grid; place-items: center;
+      font-size: 12px; font-weight: 600; color: var(--text);
+    }
+    .link-btn {
+      background: none; border: 0; color: var(--text-mute);
+      font-size: 12px; cursor: pointer; padding: 4px 8px;
+      border-radius: 6px; transition: all .15s;
+    }
+    .link-btn:hover { color: var(--text); background: var(--panel); }
+
+    /* Theme toggle (mirrors index.html style) */
+    .theme-toggle {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-mute);
+      padding: 0;
+      transition: border-color .15s, color .15s;
+    }
+    .theme-toggle:hover { border-color: var(--border-2); color: var(--text); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+    .theme-toggle .icon-sun  { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-sun  { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .card + .card { margin-top: 20px; }
+
+    .card-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 600;
+      color: var(--text);
+      margin: 0 0 18px;
+    }
+    .card-title .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+    }
+
+    /* Repo tabs */
+    .tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      padding: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 12px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: left;
+      transition: all .18s;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .tab:hover { color: var(--text); background: var(--panel-2); }
+    .tab.active {
+      background: var(--bg-hover);
+      border: 1px solid var(--border-2);
+      color: var(--text);
+    }
+    .tab .tab-name { font-weight: 600; font-size: 14px; }
+    .tab .tab-desc { font-size: 11px; color: var(--text-mute); }
+    .tab.active .tab-desc { color: var(--text-dim); }
+
+    /* Form grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-mute);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .select {
+      position: relative;
+    }
+    .select select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 12px 38px 12px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .select select:hover { border-color: var(--border-2); background: var(--panel-2); }
+    .select select:focus {
+      outline: 0;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .select::after {
+      content: "";
+      position: absolute; right: 14px; top: 50%;
+      width: 8px; height: 8px;
+      border-right: 2px solid var(--text-mute);
+      border-bottom: 2px solid var(--text-mute);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
+    }
+
+    /* Run button */
+    .run-bar {
+      display: flex; align-items: center; gap: 14px;
+      margin-top: 22px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 20px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-primary:hover:not(:disabled) { background: #E4E4E7; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .play-icon { width: 0; height: 0; border-left: 9px solid var(--bg); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+
+    .msg { font-size: 13px; color: var(--text-dim); }
+    .msg.ok { color: var(--ok); }
+    .msg.err { color: var(--err); }
+
+    /* Recent runs table */
+    .runs-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+    }
+    .runs-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-mute);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    .runs-table td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .runs-table tr:last-child td { border-bottom: 0; }
+    .runs-table tr:hover td { background: var(--panel); }
+    .runs-table td.time { font-family: var(--mono); font-size: 12px; color: var(--text-mute); }
+    .runs-table a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      transition: all .15s;
+    }
+    .runs-table a:hover { background: rgba(59,130,246,0.2); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+    .badge::before {
+      content: "";
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .b-ok   { background: var(--ok-bg);   color: var(--ok); }
+    .b-ok::before   { background: var(--ok); box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+    .b-fail { background: var(--err-bg);  color: var(--err); }
+    .b-fail::before { background: var(--err); box-shadow: 0 0 0 2px rgba(239,68,68,0.25); }
+    .b-run  { background: var(--warn-bg); color: var(--warn); }
+    .b-run::before  {
+      background: var(--warn);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0.6); }
+      50%      { box-shadow: 0 0 0 6px rgba(234,179,8,0); }
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-mute);
+      font-size: 13px;
+    }
+
+    /* Admin panel */
+    .admin-form {
+      display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap;
+      padding: 14px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .admin-form .field { flex: 1; min-width: 200px; margin: 0; }
+    .admin-form input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .admin-form input:focus {
+      outline: 0; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .credentials-box {
+      margin-top: 12px;
+      padding: 14px;
+      background: var(--ok-bg);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+    }
+    .credentials-box .label { color: var(--text-mute); margin-right: 6px; }
+    .credentials-box .copy-row { display: flex; align-items: center; gap: 8px; }
+    .credentials-box .copy-row + .copy-row { margin-top: 4px; }
+    .credentials-box .val {
+      flex: 1; overflow-wrap: anywhere;
+      background: var(--bg); padding: 4px 8px; border-radius: 4px;
+    }
+    .credentials-box button {
+      background: var(--text); color: var(--bg); border: 0;
+      font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-family: inherit;
+    }
+    .user-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .user-row:last-child { border-bottom: 0; }
+    .user-row .email { color: var(--text); }
+    .user-row .meta { color: var(--text-mute); font-size: 11px; margin-left: 10px; }
+    .btn-danger {
+      background: transparent;
+      color: var(--err);
+      border: 1px solid rgba(239,68,68,0.25);
+      font-family: inherit; font-size: 12px;
+      padding: 4px 10px; border-radius: 6px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-danger:hover { background: var(--err-bg); }
+
+    /* Console / terminal panel */
+    .console-card {
+      padding: 0;
+      overflow: hidden;
+    }
+    .console-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+    }
+    .console-head .title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600;
+    }
+    .traffic { display: flex; gap: 6px; }
+    .traffic span { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    .traffic .r { background: #ff5f57; }
+    .traffic .y { background: #febc2e; }
+    .traffic .g { background: #28c840; }
+    .console-head .meta { font-family: var(--mono); font-size: 11px; color: var(--text-mute); }
+    .console-head .actions { display: flex; gap: 8px; align-items: center; }
+    .icon-btn {
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text-dim); font-family: inherit; font-size: 12px;
+      padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      transition: all .15s;
+    }
+    .icon-btn:hover { color: var(--text); background: var(--panel-2); }
+
+    .console-body {
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.55;
+      background: #050505;
+      color: #E4E4E7;
+      height: 360px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* Console stays dark in both themes — terminals should always be dark */
+    [data-theme="light"] .console-head { background: #0A0A0A; color: #E4E4E7; }
+    [data-theme="light"] .console-head .title { color: #E4E4E7; }
+    [data-theme="light"] .console-head .icon-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); color: #A1A1AA; }
+    [data-theme="light"] .console-head .icon-btn:hover { color: #FAFAFA; background: rgba(255,255,255,0.14); }
+    .console-body::-webkit-scrollbar { width: 8px; }
+    .console-body::-webkit-scrollbar-track { background: transparent; }
+    .console-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    .console-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+    .line { padding: 1px 0; }
+    .c-pass { color: var(--ok); font-weight: 600; }
+    .c-fail { color: var(--err); font-weight: 600; }
+    .c-skip { color: var(--warn); font-weight: 600; }
+    .c-error { color: var(--err); font-weight: 600; }
+    .c-header { color: var(--text-mute); }
+    .c-info { color: var(--accent); }
+    .c-path { color: var(--accent-2); }
+    .c-pct { color: var(--text-deep); }
+    .c-dim { color: var(--text-deep); }
+    .c-summary-ok { color: var(--ok); font-weight: 600; }
+    .c-summary-fail { color: var(--err); font-weight: 600; }
+
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 15px;
+      background: var(--ok);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .status-pill::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+    }
+    .sp-run { background: var(--warn-bg); color: var(--warn); }
+    .sp-run::before { background: var(--warn); animation: pulse 1.4s ease-in-out infinite; }
+    .sp-ok { background: var(--ok-bg); color: var(--ok); }
+    .sp-ok::before { background: var(--ok); }
+    .sp-fail { background: var(--err-bg); color: var(--err); }
+    .sp-fail::before { background: var(--err); }
+
+    /* Login card */
+    .login-hero {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .login-hero .big {
+      font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+    .login-hero p { color: var(--text-dim); font-size: 14px; margin: 0 0 28px; }
+
+    .demo-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: var(--warn-bg);
+      border: 1px solid rgba(234,179,8,0.2);
+      border-radius: 10px;
+      color: var(--warn);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+    .demo-banner::before {
+      content: "DEMO";
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 8px;
+      background: rgba(234,179,8,0.2);
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ─── Responsive ──────────────────────────────────────────────────── */
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      .wrap { padding: 32px 20px 60px; }
+      .card { padding: 22px; }
+    }
+
+    /* Phone */
+    @media (max-width: 640px) {
+      .wrap { padding: 20px 14px 48px; }
+      .card { padding: 18px; border-radius: 14px; }
+      header.top { flex-direction: column; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+      .user-chip { width: 100%; justify-content: space-between; }
+
+      .brand h1 { font-size: 16px; }
+      .brand .sub { font-size: 11px; }
+      .logo { width: 36px; height: 36px; border-radius: 9px; }
+
+      .grid { grid-template-columns: 1fr; gap: 12px; }
+      .tabs { grid-template-columns: 1fr; gap: 6px; }
+      .tab { padding: 10px 12px; }
+
+      .run-bar { flex-direction: column; align-items: stretch; gap: 12px; margin-top: 18px; padding-top: 18px; }
+      .btn-primary { justify-content: center; padding: 14px 18px; width: 100%; }
+      .msg { text-align: center; }
+
+      /* Console */
+      .console-head { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
+      .console-head .title { flex-wrap: wrap; gap: 8px; font-size: 12px; min-width: 0; }
+      .console-head .meta { display: none; }
+      .console-head .actions { margin-left: auto; }
+      .console-body { padding: 12px 14px; font-size: 11.5px; height: 280px; line-height: 1.5; }
+      .traffic span { width: 9px; height: 9px; }
+
+      /* Runs table → stacked card layout */
+      .runs-table thead { display: none; }
+      .runs-table, .runs-table tbody, .runs-table tr, .runs-table td { display: block; width: 100%; }
+      .runs-table tr {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .runs-table tr:last-child { border-bottom: 0; }
+      .runs-table tr:hover td { background: transparent; }
+      .runs-table td { border: 0; padding: 3px 0; }
+      .runs-table td::before {
+        content: attr(data-label);
+        display: inline-block;
+        width: 72px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-mute);
+        font-weight: 600;
+      }
+      .runs-table td.time { color: var(--text-dim); }
+      .runs-table a { display: inline-block; margin-top: 4px; }
+
+      .login-hero { padding: 40px 14px; }
+      .login-hero .big { font-size: 22px; }
+      .login-hero p { font-size: 13px; }
+
+      .card-title { font-size: 13px; margin-bottom: 14px; }
+    }
+
+    /* Small phone */
+    @media (max-width: 380px) {
+      .wrap { padding: 16px 10px 40px; }
+      .card { padding: 14px; }
+      .user-chip span:not(.avatar) { font-size: 12px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .console-body { height: 240px; font-size: 11px; }
+      .tab .tab-desc { font-size: 10px; }
+    }
+
+    /* Prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <a href="/" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px;">
+          <div class="logo">U</div>
+          <div>
+            <h1>API Test Test Dashboard</h1>
+            <div class="sub">← 回報告首頁</div>
+          </div>
+        </a>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <div id="user-area"></div>
+      </div>
+    </header>
+
+    <div id="login-card" class="card">
+      <div class="login-hero">
+        <div class="big">歡迎 👋</div>
+        <p>請使用公司 SSO 帳號登入以開始觸發測試</p>
+        <button id="btn-login" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M13.8 12H3"/><path d="M21 3v18"/></svg>
+          使用 SSO 登入
+        </button>
+      </div>
+    </div>
+
+    <div id="trigger-card" class="card hidden">
+      <div class="card-title"><span class="dot"></span>選擇測試目標</div>
+
+      <div class="tabs" id="repo-tabs">
+        <button class="tab active" data-repo="MAIN_REPO">
+          <span class="tab-name">API 自動化測試</span>
+          <span class="tab-desc">MAIN_REPO · pytest · 170 tests</span>
+        </button>
+        <button class="tab" data-repo="SECONDARY_REPO">
+          <span class="tab-name">UI 自動化測試</span>
+          <span class="tab-desc">SECONDARY_REPO · Appium iOS/Android</span>
+        </button>
+      </div>
+
+      <div class="grid">
+        <div class="field" id="field-platform" style="display:none;">
+          <label>平台</label>
+          <div class="select">
+            <select id="platform">
+              <option value="ios">iOS</option>
+              <option value="android">Android</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>環境</label>
+          <div class="select">
+            <select id="env">
+              <option value="uat">UAT</option>
+              <option value="prod">Production</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>測試範圍</label>
+          <div class="select">
+            <select id="scope">
+              <option value="-m smoke">Smoke · 冒煙測試（~3 分鐘）</option>
+              <option value="-v">Full · 全部測試</option>
+              <option value='-m "not slow"'>跳過慢速測試</option>
+              <option value="-m auth">僅需登入測試</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="run-bar">
+        <button id="btn-run" class="btn-primary">
+          <span class="play-icon"></span>
+          開始執行測試
+        </button>
+        <span id="msg" class="msg"></span>
+      </div>
+    </div>
+
+    <div id="console-card" class="card console-card hidden">
+      <div class="console-head">
+        <div class="title">
+          <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <span>pytest</span>
+          <span class="meta" id="console-meta">run · —</span>
+          <span class="status-pill sp-run" id="console-status">running</span>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" id="btn-console-clear">清除</button>
+          <button class="icon-btn" id="btn-console-close">收合</button>
+        </div>
+      </div>
+      <div class="console-body" id="console-body"></div>
+    </div>
+
+    <div id="runs-card" class="card hidden">
+      <div class="card-title"><span class="dot"></span>最近執行</div>
+      <table class="runs-table">
+        <thead>
+          <tr><th>時間</th><th>狀態</th><th>Workflow</th><th>觸發者</th><th>連結</th></tr>
+        </thead>
+        <tbody id="runs"></tbody>
+      </table>
+      <div id="runs-empty" class="empty hidden">尚無執行紀錄</div>
+    </div>
+
+  </div>
+
+<script>
+/* ─── Fill these in after running deploy.sh ─────────────────────────────── */
+const CONFIG = {
+  apiEndpoint:        "REPLACE_ME_WITH_API_ENDPOINT",
+  cognitoDomain:      "REPLACE_ME_WITH_COGNITO_DOMAIN",
+  cognitoClientId:    "REPLACE_ME_WITH_CLIENT_ID",
+  redirectUri:        window.location.origin + window.location.pathname,
+};
+/* ──────────────────────────────────────────────────────────────────────── */
+
+const TOKEN_KEY = "api-test_id_token";
+const DEMO_MODE = CONFIG.apiEndpoint.includes("REPLACE_ME") || CONFIG.cognitoClientId === "REPLACE_ME";
+let currentRepo = "MAIN_REPO";
+
+/* ─── Theme (synced with index.html via localStorage qa_theme) ────────── */
+(function applyInitialTheme(){
+  try {
+    const saved = localStorage.getItem("qa_theme") || "dark";
+    document.documentElement.setAttribute("data-theme", saved);
+  } catch (e) {}
+})();
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute("data-theme") || "dark";
+  const next = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("qa_theme", next); } catch (e) {}
+}
+
+const DEMO_RUNS = [
+  { id: 1, repo: "MAIN_REPO", name: "Full API Test Suite (ECS)", status: "completed", conclusion: "success",
+    created_at: new Date(Date.now() - 3600e3).toISOString(), html_url: "#", actor: "jack.kao" },
+  { id: 2, repo: "MAIN_REPO", name: "Full API Test Suite (ECS)", status: "in_progress", conclusion: null,
+    created_at: new Date(Date.now() - 180e3).toISOString(), html_url: "#", actor: "alice.chen" },
+  { id: 3, repo: "SECONDARY_REPO", name: "UI Smoke Test (Appium)", status: "completed", conclusion: "failure",
+    created_at: new Date(Date.now() - 7200e3).toISOString(), html_url: "#", actor: "bob.lin" },
+  { id: 4, repo: "SECONDARY_REPO", name: "UI Smoke Test (Appium)", status: "completed", conclusion: "success",
+    created_at: new Date(Date.now() - 86400e3).toISOString(), html_url: "#", actor: "jack.kao" },
+];
+
+function parseHashToken() {
+  if (!location.hash) return null;
+  const p = new URLSearchParams(location.hash.slice(1));
+  const id = p.get("id_token");
+  if (id) { sessionStorage.setItem(TOKEN_KEY, id); history.replaceState({}, "", location.pathname); }
+  return id;
+}
+
+function getToken() { return parseHashToken() || sessionStorage.getItem(TOKEN_KEY); }
+function tokenClaims(tok) { try { return JSON.parse(atob(tok.split(".")[1].replace(/-/g,'+').replace(/_/g,'/'))); } catch { return {}; } }
+function userGroups() {
+  const tok = getToken(); if (!tok) return [];
+  const c = tokenClaims(tok);
+  const g = c["cognito:groups"];
+  if (Array.isArray(g)) return g.map(String);
+  if (typeof g === "string") return g.replace(/[\[\]]/g,"").split(/[,\s]+/).filter(Boolean);
+  return [];
+}
+function canTrigger() {
+  const g = userGroups();
+  return g.includes("admin") || g.includes("tester");
+}
+
+function login() {
+  const u = new URL(`https://${CONFIG.cognitoDomain}/oauth2/authorize`);
+  u.searchParams.set("response_type", "token");
+  u.searchParams.set("client_id", CONFIG.cognitoClientId);
+  // After login, land on the dashboard root (index.html) — user can then click "觸發測試"
+  u.searchParams.set("redirect_uri", new URL("/", window.location.href).toString());
+  u.searchParams.set("scope", "openid email");
+  location.href = u.toString();
+}
+
+function logout() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  const u = new URL(`https://${CONFIG.cognitoDomain}/logout`);
+  u.searchParams.set("client_id", CONFIG.cognitoClientId);
+  u.searchParams.set("logout_uri", CONFIG.redirectUri);
+  location.href = u.toString();
+}
+
+async function api(path, init = {}) {
+  if (DEMO_MODE) {
+    await new Promise(r => setTimeout(r, 400));
+    if (path === "/trigger") {
+      const body = JSON.parse(init.body);
+      DEMO_RUNS.unshift({
+        id: Date.now(), repo: body.repo,
+        name: body.repo === "SECONDARY_REPO" ? "UI Smoke Test (Appium)" : "Full API Test Suite (ECS)",
+        status: "queued", conclusion: null, created_at: new Date().toISOString(),
+        html_url: "#", actor: "demo.user",
+      });
+      return { dispatched: true, repo: body.repo, workflow: "demo.yml", by: "demo.user" };
+    }
+    if (path.startsWith("/runs")) {
+      const repo = new URL("http://x" + path).searchParams.get("repo");
+      return { runs: DEMO_RUNS.filter(r => r.repo === repo) };
+    }
+    return {};
+  }
+  const tok = getToken();
+  if (!tok) throw new Error("not logged in");
+  const res = await fetch(CONFIG.apiEndpoint + path, {
+    ...init,
+    headers: { ...(init.headers || {}), Authorization: `Bearer ${tok}`, "Content-Type": "application/json" },
+  });
+  const text = await res.text();
+  const body = text ? JSON.parse(text) : {};
+  if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+  return body;
+}
+
+/* ─── Console panel ───────────────────────────────────────────────────── */
+
+const consoleCard = () => document.getElementById("console-card");
+const consoleBody = () => document.getElementById("console-body");
+const consoleMeta = () => document.getElementById("console-meta");
+const consoleStatus = () => document.getElementById("console-status");
+
+function openConsole(runLabel) {
+  consoleCard().classList.remove("hidden");
+  consoleBody().innerHTML = "";
+  consoleMeta().textContent = `run · ${runLabel}`;
+  setConsoleStatus("running");
+  consoleCard().scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function setConsoleStatus(kind) {
+  const el = consoleStatus();
+  el.className = "status-pill " + ({ running: "sp-run", success: "sp-ok", failure: "sp-fail" }[kind] || "sp-run");
+  el.textContent = kind;
+}
+
+function appendLine(html, cls = "") {
+  const body = consoleBody();
+  const div = document.createElement("div");
+  div.className = "line " + cls;
+  div.innerHTML = html;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function classifyLine(raw) {
+  const line = raw.replace(/</g, "&lt;");
+  if (/^=+.*test session starts/.test(raw) || /^=+\s*$/.test(raw)) return { html: line, cls: "c-header" };
+  if (/PASSED/.test(raw)) {
+    return { html: line.replace("PASSED", '<span class="c-pass">PASSED</span>').replace(/\[\s*\d+%\]/, m => `<span class="c-pct">${m}</span>`), cls: "" };
+  }
+  if (/FAILED/.test(raw)) {
+    return { html: line.replace("FAILED", '<span class="c-fail">FAILED</span>').replace(/\[\s*\d+%\]/, m => `<span class="c-pct">${m}</span>`), cls: "" };
+  }
+  if (/SKIPPED/.test(raw)) {
+    return { html: line.replace("SKIPPED", '<span class="c-skip">SKIPPED</span>'), cls: "" };
+  }
+  if (/^collected /.test(raw)) return { html: line, cls: "c-info" };
+  if (/^platform|^cachedir|^rootdir|^configfile|^plugins/.test(raw)) return { html: line, cls: "c-dim" };
+  if (/passed.*failed|passed in|failed in/.test(raw)) {
+    const isOk = !/failed/.test(raw) || /0 failed/.test(raw);
+    return { html: line, cls: isOk ? "c-summary-ok" : "c-summary-fail" };
+  }
+  return { html: line, cls: "" };
+}
+
+/* ─── Demo output generator ───────────────────────────────────────────── */
+
+function demoPytestLines(scope, env) {
+  const cases = [
+    ["tests/test_member_api.py::TestMemberProfile", ["test_get_profile","test_get_point","test_get_preferences","test_get_vvip","test_get_horoscope"]],
+    ["tests/test_profile_api.py::TestMGM", ["test_my_invitation_code","test_invitation_stats","test_validate_invitation_code"]],
+    ["tests/test_news_api.py::TestNewsQuery", ["test_news_by_keyword","test_news_by_category","test_hot_news"]],
+    ["tests/test_cdn_api.py::TestCDNAppConfig", ["test_app_version","test_app_announcement","test_feature_config"]],
+    ["tests/test_v190_id_mappings_api.py::TestIdMappingsUidToGid", ["test_uid_to_gid_single","test_uid_to_gid_batch"]],
+    ["tests/test_coupon_claim_api.py::TestCouponClaimLifecycle", ["test_01_list_claimable_coupons","test_02_check_already_claimed","test_03_claim_coupon"]],
+  ];
+  const flat = cases.flatMap(([path, fns]) => fns.map(fn => `${path}::${fn}`));
+  const total = flat.length;
+  const failIdx = Math.random() < 0.25 ? Math.floor(Math.random() * total) : -1;
+
+  const out = [
+    "============================= test session starts ==============================",
+    "platform linux -- Python 3.11.5, pytest-7.4.3, pluggy-1.3.0",
+    "cachedir: .pytest_cache",
+    `rootdir: /app, configfile: pytest.ini`,
+    "plugins: html-4.1.1, metadata-3.0.0, anyio-4.0.0",
+    `ENVIRONMENT=${env} PYTEST_ARGS="${scope}"`,
+    `collected 170 items / ${170 - total} deselected / ${total} selected`,
+    "",
+  ];
+  flat.forEach((name, i) => {
+    const pct = Math.round(((i + 1) / total) * 100);
+    const pad = pct < 10 ? "  " : pct < 100 ? " " : "";
+    const status = i === failIdx ? "FAILED" : "PASSED";
+    out.push(`${name} ${status}    [${pad}${pct}%]`);
+  });
+  out.push("");
+  if (failIdx >= 0) {
+    out.push("=================================== FAILURES ===================================");
+    out.push(`_____________________ ${flat[failIdx].split("::").slice(-1)[0]} _____________________`);
+    out.push("");
+    out.push("    assert response.status_code == 200");
+    out.push("E   assert 401 == 200");
+    out.push("E    +  where 401 = <Response [401]>.status_code");
+    out.push("");
+    out.push("=========================== short test summary info ============================");
+    out.push(`FAILED ${flat[failIdx]} - assert 401 == 200`);
+    const pass = total - 1;
+    out.push(`======================== 1 failed, ${pass} passed in 127.45s (0:02:07) =========================`);
+  } else {
+    out.push(`================================ ${total} passed in 127.45s (0:02:07) ================================`);
+  }
+  return { lines: out, ok: failIdx < 0 };
+}
+
+async function streamDemoLogs(scope, env) {
+  const { lines, ok } = demoPytestLines(scope, env);
+  for (const raw of lines) {
+    const { html, cls } = classifyLine(raw);
+    appendLine(html || "&nbsp;", cls);
+    await new Promise(r => setTimeout(r, 40 + Math.random() * 90));
+  }
+  setConsoleStatus(ok ? "success" : "failure");
+  refreshRuns();
+}
+
+/* ─── Run handler ─────────────────────────────────────────────────────── */
+
+async function runTest() {
+  const btn = document.getElementById("btn-run");
+  const msg = document.getElementById("msg");
+  btn.disabled = true;
+  msg.className = "msg"; msg.textContent = "派送中…";
+  try {
+    const body = {
+      repo: currentRepo,
+      environment: document.getElementById("env").value,
+      scope: document.getElementById("scope").value,
+      platform: document.getElementById("platform").value,
+    };
+    const r = await api("/trigger", { method: "POST", body: JSON.stringify(body) });
+    msg.className = "msg ok";
+    msg.textContent = `✓ 已派送 ${r.repo}/${r.workflow}`;
+
+    openConsole(`${r.repo} · ${body.environment} · ${body.scope}`);
+    refreshRuns();
+
+    if (DEMO_MODE) {
+      await streamDemoLogs(body.scope, body.environment);
+    } else {
+      await pollRealLogs();
+    }
+  } catch (e) {
+    msg.className = "msg err";
+    msg.textContent = "✗ " + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ─── Admin panel ─────────────────────────────────────────────────────── */
+
+async function tryShowAdmin() {
+  console.log("[admin] probing /admin/users…");
+  try {
+    const r = await api("/admin/users");
+    console.log("[admin] ✓ you are admin. users:", r.users);
+    document.getElementById("admin-card").classList.remove("hidden");
+    renderUsers(r.users || []);
+  } catch (e) {
+    console.warn("[admin] probe failed:", e.message);
+  }
+}
+
+function renderUsers(users) {
+  const host = document.getElementById("admin-users");
+  if (!users.length) { host.innerHTML = '<div class="empty">尚無使用者</div>'; return; }
+  host.innerHTML = users.map(u => {
+    const dateStr = u.created ? new Date(u.created).toLocaleDateString("zh-TW") : "-";
+    const enabled = u.enabled ? "" : ' <span class="meta" style="color:var(--err);">disabled</span>';
+    return `
+      <div class="user-row">
+        <div>
+          <span class="email">${u.email || "-"}</span>
+          <span class="meta">${u.status} · ${dateStr}</span>
+          ${enabled}
+        </div>
+        <button class="btn-danger" data-email="${u.email}">刪除</button>
+      </div>`;
+  }).join("");
+  host.querySelectorAll(".btn-danger").forEach(b => b.onclick = () => deleteUser(b.dataset.email));
+}
+
+async function addUser() {
+  const email = document.getElementById("admin-email").value.trim();
+  const password = document.getElementById("admin-password").value.trim();
+  const resultBox = document.getElementById("admin-result");
+  const btn = document.getElementById("btn-add-user");
+  resultBox.innerHTML = ""; btn.disabled = true;
+  if (DEMO_MODE) {
+    await new Promise(r => setTimeout(r, 400));
+    const pw = password || "DemoPass" + Math.random().toString(36).slice(2, 8) + "!A";
+    renderCredentials(email, pw);
+    btn.disabled = false;
+    return;
+  }
+  try {
+    const body = { email };
+    if (password) body.password = password;
+    const r = await api("/admin/users", { method: "POST", body: JSON.stringify(body) });
+    renderCredentials(r.email, r.password);
+    document.getElementById("admin-email").value = "";
+    document.getElementById("admin-password").value = "";
+    const u = await api("/admin/users");
+    renderUsers(u.users || []);
+  } catch (e) {
+    resultBox.innerHTML = `<div class="msg err" style="margin-top:10px;">✗ ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderCredentials(email, password) {
+  const dashboardUrl = window.location.origin + window.location.pathname;
+  const html = `
+    <div class="credentials-box">
+      <div style="margin-bottom:8px;font-weight:600;color:var(--ok);">✓ 帳號建立成功 — 請把下列資訊私訊給使用者</div>
+      <div class="copy-row"><span class="label">URL:</span><span class="val">${dashboardUrl}</span><button onclick="navigator.clipboard.writeText('${dashboardUrl}')">copy</button></div>
+      <div class="copy-row"><span class="label">帳號:</span><span class="val">${email}</span><button onclick="navigator.clipboard.writeText('${email}')">copy</button></div>
+      <div class="copy-row"><span class="label">密碼:</span><span class="val">${password}</span><button onclick="navigator.clipboard.writeText('${password}')">copy</button></div>
+    </div>`;
+  document.getElementById("admin-result").innerHTML = html;
+}
+
+async function deleteUser(email) {
+  if (!confirm(`確定刪除 ${email}？`)) return;
+  try {
+    await api(`/admin/users/${encodeURIComponent(email)}`, { method: "DELETE" });
+    const u = await api("/admin/users");
+    renderUsers(u.users || []);
+  } catch (e) {
+    alert("刪除失敗：" + e.message);
+  }
+}
+
+async function findFreshRun(dispatchedAtMs) {
+  // workflow_dispatch returns 204 with no run id — poll list until the new run appears
+  appendLine("waiting for GitHub to register the run…", "c-dim");
+  for (let i = 0; i < 20; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    try {
+      const r = await api(`/runs?repo=${encodeURIComponent(currentRepo)}`);
+      const fresh = (r.runs || []).find(x => {
+        const t = new Date(x.created_at).getTime();
+        return t >= dispatchedAtMs - 5000;
+      });
+      if (fresh) return fresh;
+    } catch (e) { console.warn("find-run:", e.message); }
+  }
+  return null;
+}
+
+async function pollRealLogs() {
+  const dispatchedAt = Date.now();
+  const run = await findFreshRun(dispatchedAt);
+  if (!run) {
+    appendLine("run didn't appear within 40s — check GitHub Actions manually", "c-fail");
+    setConsoleStatus("failure");
+    return;
+  }
+  appendLine(`run #${run.run_number || run.id}  →  ${run.html_url}`, "c-info");
+  appendLine("", "");
+  const runId = run.id;
+
+  let seen = 0;
+  let status = run.status || "queued";
+  let conclusion = null;
+  let attempts = 0;
+  const maxAttempts = 120; // ~10 min cap
+
+  while (attempts++ < maxAttempts && status !== "completed") {
+    await new Promise(r => setTimeout(r, 5000));
+    try {
+      const r = await api(`/runs/${runId}/logs?repo=${encodeURIComponent(currentRepo)}`);
+      const lines = (r.lines || []).slice(seen);
+      seen += lines.length;
+      for (const raw of lines) {
+        const { html, cls } = classifyLine(raw);
+        appendLine(html || "&nbsp;", cls);
+      }
+      status = r.status || status;
+      conclusion = r.conclusion || conclusion;
+    } catch (e) {
+      // 404 while job is queued — keep trying, Lambda may not have a job yet
+      if (!/404/.test(e.message)) console.warn("poll-logs:", e.message);
+    }
+  }
+  setConsoleStatus(conclusion || "failure");
+  refreshRuns();
+}
+
+function statusBadge(run) {
+  if (run.status === "completed") {
+    const cls = run.conclusion === "success" ? "b-ok" : "b-fail";
+    return `<span class="badge ${cls}">${run.conclusion || "done"}</span>`;
+  }
+  return `<span class="badge b-run">${run.status || "queued"}</span>`;
+}
+
+function formatTime(iso) {
+  const d = new Date(iso);
+  const now = Date.now();
+  const diff = now - d.getTime();
+  if (diff < 60e3) return "剛剛";
+  if (diff < 3600e3) return `${Math.floor(diff / 60e3)} 分鐘前`;
+  if (diff < 86400e3) return `${Math.floor(diff / 3600e3)} 小時前`;
+  return d.toLocaleString("zh-TW", { timeZone: "Asia/Taipei", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+async function refreshRuns() {
+  try {
+    const r = await api(`/runs?repo=${encodeURIComponent(currentRepo)}`);
+    const tbody = document.getElementById("runs");
+    const empty = document.getElementById("runs-empty");
+    if (!r.runs || !r.runs.length) {
+      tbody.innerHTML = "";
+      empty.classList.remove("hidden");
+      return;
+    }
+    empty.classList.add("hidden");
+    tbody.innerHTML = r.runs.map(x => `
+      <tr>
+        <td class="time" data-label="時間">${formatTime(x.created_at)}</td>
+        <td data-label="狀態">${statusBadge(x)}</td>
+        <td data-label="Workflow">${x.name || "-"}</td>
+        <td data-label="觸發者">${x.actor || "-"}</td>
+        <td data-label="連結"><a href="${x.html_url}" target="_blank">查看 log →</a></td>
+      </tr>`).join("");
+  } catch (e) {
+    console.warn(e);
+  }
+}
+
+function renderUser(email) {
+  const initials = (email || "U").slice(0, 1).toUpperCase();
+  document.getElementById("user-area").innerHTML = `
+    <div class="user-chip">
+      <div class="avatar">${initials}</div>
+      <span>${email || "user"}</span>
+      <button id="btn-logout" class="link-btn">登出</button>
+    </div>`;
+  document.getElementById("btn-logout").onclick = logout;
+}
+
+function selectRepo(repo) {
+  currentRepo = repo;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.repo === repo));
+  document.getElementById("field-platform").style.display = (repo === "SECONDARY_REPO") ? "" : "none";
+  refreshRuns();
+}
+
+function showLoggedIn() {
+  const tok = getToken();
+  if (!tok) return false;
+  const c = tokenClaims(tok);
+  if (c.exp && c.exp * 1000 < Date.now()) { sessionStorage.removeItem(TOKEN_KEY); return false; }
+  document.getElementById("login-card").classList.add("hidden");
+  document.getElementById("trigger-card").classList.remove("hidden");
+  document.getElementById("runs-card").classList.remove("hidden");
+  renderUser(c.email || c["cognito:username"]);
+  refreshRuns();
+  setInterval(refreshRuns, 15000);
+  applyRoleGate();
+  return true;
+}
+
+function applyRoleGate() {
+  if (DEMO_MODE) return;
+  const btn = document.getElementById("btn-run");
+  const msg = document.getElementById("msg");
+  if (!canTrigger()) {
+    btn.disabled = true;
+    msg.className = "msg err";
+    msg.textContent = "✗ 你沒有觸發測試的權限（需要 tester 或 admin）— 請聯絡管理員";
+  }
+}
+
+document.getElementById("btn-login").onclick = login;
+document.getElementById("btn-run").onclick = runTest;
+document.getElementById("themeToggle").onclick = toggleTheme;
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => selectRepo(t.dataset.repo));
+document.getElementById("btn-console-clear").onclick = () => { consoleBody().innerHTML = ""; };
+document.getElementById("btn-console-close").onclick = () => consoleCard().classList.add("hidden");
+
+const PREVIEW_LOGIN = new URLSearchParams(location.search).get("preview") === "login";
+
+if (DEMO_MODE) {
+  const banner = document.createElement("div");
+  banner.className = "demo-banner";
+  banner.appendChild(document.createTextNode("未連接後端，按鈕可點、資料為假。填入 CONFIG 後自動切換至正式模式。"));
+  document.querySelector(".wrap").insertBefore(banner, document.querySelector(".card"));
+
+  if (PREVIEW_LOGIN) {
+    document.getElementById("btn-login").onclick = (e) => {
+      e.preventDefault();
+      document.getElementById("login-card").classList.add("hidden");
+      document.getElementById("trigger-card").classList.remove("hidden");
+      document.getElementById("runs-card").classList.remove("hidden");
+      renderUser("demo.user@example.com");
+      refreshRuns();
+    };
+  } else {
+    document.getElementById("login-card").classList.add("hidden");
+    document.getElementById("trigger-card").classList.remove("hidden");
+    document.getElementById("runs-card").classList.remove("hidden");
+    renderUser("demo.user@example.com");
+    refreshRuns();
+  }
+} else if (!showLoggedIn() && location.hash.includes("id_token")) {
+  parseHashToken();
+  showLoggedIn();
+}
+</script>
+</body>
+</html>

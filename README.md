@@ -163,10 +163,10 @@ will **drop** `platform` (not in the `api-tests` list) before calling GitHub.
 to give users a friendly entry point with two cards — "Trigger tests" and
 "View reports".
 
-👁 **[Live preview](https://htmlpreview.github.io/?https://github.com/kao273183/pytest-api-kit-dashboard/blob/main/frontend/index.html)** — see the template rendered directly (no clone needed).
+👁 **[Live preview](https://kao273183.github.io/pytest-api-kit-dashboard/)** — the template rendered via GitHub Pages (no clone needed).
 
 The trigger panel itself also renders standalone in demo mode:
-👁 **[Live preview trigger-panel.html](https://htmlpreview.github.io/?https://github.com/kao273183/pytest-api-kit-dashboard/blob/main/frontend/trigger-panel.html)** (shows the UI; real auth requires your own Cognito setup).
+👁 **[Live preview — trigger-panel.html](https://kao273183.github.io/pytest-api-kit-dashboard/trigger-panel.html)** (shows the UI; real auth requires your own Cognito setup).
 
 Use it if **either** is true:
 
@@ -275,9 +275,9 @@ POOL_ID=<從 stack output 取得> ./infra/add-user.sh you@acme.com '' admin
 
 ### 線上預覽（不用 clone）
 
-👁 **[範本 Landing 頁面預覽](https://htmlpreview.github.io/?https://github.com/kao273183/pytest-api-kit-dashboard/blob/main/frontend/index.html)** — 直接在瀏覽器看 `frontend/index.html` 長什麼樣
+👁 **[範本 Landing 頁面預覽](https://kao273183.github.io/pytest-api-kit-dashboard/)** — GitHub Pages live
 
-👁 **[觸發面板預覽](https://htmlpreview.github.io/?https://github.com/kao273183/pytest-api-kit-dashboard/blob/main/frontend/trigger-panel.html)** — 展示 UI（不能真的登入，需要你自己部署 Cognito）
+👁 **[觸發面板預覽](https://kao273183.github.io/pytest-api-kit-dashboard/trigger-panel.html)** — 展示 UI（不能真的登入，需要你自己部署 Cognito）
 
 ### 這裡沒有的東西
 

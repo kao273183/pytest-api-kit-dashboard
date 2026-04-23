@@ -129,7 +129,7 @@
 
     <nav class="grid">
       <!-- 1. Trigger — served by pytest-api-kit-dashboard -->
-      <a class="card" href="/trigger-panel.html">
+      <a class="card" href="trigger-panel.html">
         <div class="icon">▶</div>
         <h2>Trigger tests</h2>
         <p>Sign in with SSO and kick off an API or UI test run against any allowed environment.</p>
@@ -137,11 +137,11 @@
       </a>
 
       <!-- 2. Reports — served by pytest-api-kit-aws (generate_index_html.py produces this page when installed) -->
-      <a class="card" href="/pytest-reports/">
+      <a class="card" id="reports-card" href="pytest-reports/">
         <div class="icon">📊</div>
         <h2>View reports</h2>
         <p>Browse every past test run grouped by environment, with pass / fail badges and deep links.</p>
-        <div class="arrow">Browse reports →</div>
+        <div class="arrow" id="reports-arrow">Browse reports →</div>
       </a>
 
       <!-- 3. Docs (optional; point to your internal wiki, Confluence, etc.) -->
@@ -174,6 +174,33 @@
     // before aws repo's generate_index_html.py has run for the first time.
     //
     // Customise above: PROJECT_NAME in <title> and <h1>, docs/support links.
+
+    // When viewed on github.io (this repo's own preview), `pytest-reports/`
+    // doesn't exist because reports are uploaded to YOUR S3 bucket by
+    // pytest-api-kit-aws in production. Mark the card as demo-only so
+    // visitors don't hit a 404.
+    (function handleGitHubPagesDemo() {
+      if (!location.hostname.endsWith("github.io")) return;
+      var card = document.getElementById("reports-card");
+      if (!card) return;
+      card.removeAttribute("href");
+      card.setAttribute("data-disabled", "true");
+      card.style.cursor = "default";
+      var arrow = document.getElementById("reports-arrow");
+      if (arrow) arrow.textContent = "Available once deployed";
+      var banner = document.createElement("div");
+      banner.style.cssText =
+        "background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);" +
+        "border-radius:8px;padding:.8rem 1rem;margin-bottom:2rem;" +
+        "font-size:.85rem;line-height:1.5;";
+      banner.innerHTML =
+        "👋 <b>You're on the GitHub Pages preview</b>. This is a template — " +
+        "the cards will work against real endpoints once you deploy to your " +
+        "own AWS stack. See the " +
+        "<a href='https://github.com/kao273183/pytest-api-kit-dashboard#quickstart'>quickstart</a>.";
+      var wrap = document.querySelector(".wrap");
+      if (wrap) wrap.insertBefore(banner, wrap.querySelector("nav"));
+    })();
   </script>
 </body>
 </html>

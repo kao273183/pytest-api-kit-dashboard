@@ -92,6 +92,7 @@ pytest-api-kit-dashboard/
 │   ├── deploy.sh              ← package Lambda, deploy stack, print outputs
 │   └── add-user.sh            ← admin util: `./add-user.sh alice@acme.com '' tester`
 ├── frontend/
+│   ├── index.html             ← landing page template (optional; see "Landing page" below)
 │   └── trigger-panel.html     ← single-file web UI (HTML + CSS + vanilla JS)
 └── docs/
     └── quickstart.md          ← 45-min end-to-end walkthrough
@@ -155,6 +156,32 @@ will **drop** `platform` (not in the `api-tests` list) before calling GitHub.
   Logs with the actor's email
 
 ---
+
+## Landing page (optional)
+
+`frontend/index.html` is a **template** you can upload to the CloudFront root
+to give users a friendly entry point with two cards — "Trigger tests" and
+"View reports".
+
+Use it if **either** is true:
+
+- You're **not** using [`pytest-api-kit-aws`](https://github.com/kao273183/pytest-api-kit-aws)
+  (which writes its own `index.html` listing every historical run)
+- You want a branded landing page between users and both the trigger panel + report index
+
+```bash
+# Edit links + brand name in frontend/index.html first
+aws s3 cp frontend/index.html s3://your-bucket/index.html
+aws cloudfront create-invalidation --distribution-id <DIST_ID> --paths "/index.html"
+```
+
+⚠ If you **do** use `pytest-api-kit-aws`, its `generate_index_html.py`
+overwrites `s3://bucket/index.html` after every test run. Either:
+
+1. **Pick one** — upload only the dashboard repo's `index.html` if you prefer
+   a static landing page
+2. **Or rename** — upload this file as `s3://bucket/home.html` and the
+   trigger panel's Cognito callback still lands on the dynamic report index
 
 ## Not-in-this-repo
 

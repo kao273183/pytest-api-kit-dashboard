@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports will live here — pytest-api-kit-dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a; --fg: #f8fafc; --muted: #94a3b8;
+      --accent: #2563eb; --card-border: rgba(255, 255, 255, 0.1);
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f8fafc; --fg: #0f172a; --muted: #475569; --card-border: #e2e8f0; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+                   "Microsoft JhengHei", Roboto, sans-serif;
+      background: var(--bg); color: var(--fg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .box {
+      max-width: 580px; text-align: center;
+      padding: 2.5rem 2rem;
+      border: 1px solid var(--card-border); border-radius: 14px;
+      background: rgba(255,255,255,.03);
+    }
+    .icon { font-size: 3rem; margin-bottom: 1rem; }
+    h1 { margin: 0 0 1rem; font-size: 1.5rem; }
+    p { color: var(--muted); line-height: 1.6; margin: .8rem 0; }
+    a { color: var(--accent); }
+    code { background: rgba(255,255,255,.08); padding: .15em .4em; border-radius: 4px; font-size: .9em; }
+    .actions { margin-top: 1.5rem; display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: .6em 1.2em; border-radius: 8px;
+      text-decoration: none; font-size: .9rem; font-weight: 500;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { border: 1px solid var(--card-border); color: var(--fg); }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="icon">📊</div>
+    <h1>Reports will live here — once you deploy</h1>
+    <p>
+      You're on the GitHub Pages <b>template preview</b>. Real test reports
+      only exist on <b>your own</b> AWS S3 bucket after you deploy
+      <a href="https://github.com/kao273183/pytest-api-kit-aws">pytest-api-kit-aws</a>
+      — its <code>generate_index_html.py</code> writes a report index here
+      after every run.
+    </p>
+    <p>
+      In production this URL resolves to a table of historical test runs
+      grouped by environment, with pass/fail badges and deep links to each
+      <code>report.html</code>.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="../">← Back to landing</a>
+      <a class="btn btn-secondary"
+         href="https://github.com/kao273183/pytest-api-kit-dashboard#quickstart">
+         Read quickstart
+      </a>
+    </div>
+  </div>
+</body>
+</html>
